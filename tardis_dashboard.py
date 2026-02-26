@@ -126,7 +126,6 @@ def plot_predict_delay():
 
                 st.success(f"Prédiction du retard moyen : {prediction[0]:.2f} min")
                 st.warning("Les informations données ne sont pas fiables à 100%")
-                st.write(filtered_data)
 
             except Exception as e:
                 st.error(f"Erreur lors de la prédiction : {e}")
@@ -137,3 +136,4 @@ plot_temporal_evolution()
 plot_delay_causes()
 plot_Interact_Gare()
 plot_predict_delay()
+
