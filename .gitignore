@@ -1,4 +1,5 @@
 /.venv
 /.env
-/cleaned_dataseet.csv
-/cleaned_dataseet
+/cleaned_dataset.csv
+/cleaned_datas5et
+/model.joblib
