@@ -3,6 +3,9 @@ import pandas as pd
 
 data = pd.read_csv("cleaned_dataset.csv")
 
+data["Date"] = pd.to_datetime(data["Date"], errors="coerce")
+
+
 
 def plot_columns():
 
@@ -23,31 +26,57 @@ def plot_columns():
     with col3:
         st.metric(label="Taux de Ponctualité", value=f"{punctuality_rate:.1f}%")
 
-
-    
-
-plot_columns()
-
 def plot_temporal_evolution():
 
     st.subheader("Évolution du retard moyen au départ")    
     chart_data = data.groupby("Date")["Retard moyen de tous les trains au départ"].mean().reset_index()
     st.line_chart(chart_data, x="Date", y="Retard moyen de tous les trains au départ")
 
+def plot_delay_causes():
+    st.subheader("Répartition des causes de retard")
+
+    delay_causes = [col for col in data.columns if "Prct retard pour cause" in col]
+
+    if delay_causes:
+        avg_delays = data[delay_causes].mean().sort_values(ascending=False)
+        st.bar_chart(avg_delays)
+    else:
+        st.warning("Aucune colonne de cause de retard trouvée.")
+
+def plot_Interact_Gare():
+
+    st.subheader("Analyse interactive par gare")
+
+
+    option = st.selectbox(
+        "Choisissez une gare de départ",
+        data["Gare de départ"],
+        index=None,
+        placeholder="Choisisez votre gare de départ"
+    )
+
+    if option:
+        filtered_data = data[data["Gare de départ"] == option]
+
+        chart_data = filtered_data.groupby("Date")["Retard moyen de tous les trains au départ"].mean().reset_index()
+        st.line_chart(chart_data, x="Date", y="Retard moyen de tous les trains au départ")
+
+        charts_data = filtered_data.groupby("Date")["Retard moyen de tous les trains à l'arrivée"].mean().reset_index()
+
+        # Rename column because he d'ont like "'"
+        charts_data = charts_data.rename(columns={"Retard moyen de tous les trains à l'arrivée": "Retard moyen de tous les trains à l arrivée"})
+        st.line_chart(charts_data,x="Date",y="Retard moyen de tous les trains à l arrivée")
+                    
+
+    else:
+        st.warning("Pas de données pour cette gare.")
+
+def plot_predict_delay():
+    ...
 plot_temporal_evolution()
-
-
-
-# --- SECTION 2: DISTRIBUTION DES RETARDS (Delay Patterns) ---
-# TODO: Créer un graphique (Pie chart ou Bar chart horizontal) 
-# TODO: Utiliser les colonnes 'Prct retard pour cause...' (externes, infrastructure, matériel, etc.)
-# TODO: Ce graphique doit montrer la répartition moyenne des causes de retard au niveau national
-
-# --- SECTION 3: ANALYSE INTERACTIVE PAR GARE (Interactive Element) ---
-# TODO: Créer un sélecteur (st.selectbox) pour choisir une 'Gare de départ'
-# TODO: Filtrer le dataframe en fonction de la gare choisie
-# TODO: Afficher un graphique à barres montrant les gares d'arrivée les plus touchées par les retards depuis cette ville
-
+plot_columns()
+plot_delay_causes()
+plot_Interact_Gare()
 
 # --- SECTION 5: INTERFACE DE PRÉDICTION (Prediction Interface) ---
 # TODO: Créer des champs de saisie pour l'utilisateur (Gare départ, Gare arrivée, mois du voyage)
