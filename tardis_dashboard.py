@@ -57,16 +57,26 @@ def plot_Interact_Gare():
 
     if option:
         filtered_data = data[data["Gare de départ"] == option]
+
         chart_data = filtered_data.groupby("Date")["Retard moyen de tous les trains au départ"].mean().reset_index()
         st.line_chart(chart_data, x="Date", y="Retard moyen de tous les trains au départ")
 
+        charts_data = filtered_data.groupby("Date")["Retard moyen de tous les trains à l'arrivée"].mean().reset_index()
+
+        # Rename column because he d'ont like "'"
+        charts_data = charts_data.rename(columns={"Retard moyen de tous les trains à l'arrivée": "Retard moyen de tous les trains à l arrivée"})
+        st.line_chart(charts_data,x="Date",y="Retard moyen de tous les trains à l arrivée")
+                    
 
     else:
         st.warning("Pas de données pour cette gare.")
 
 def plot_predict_delay():
     ...
-
+plot_temporal_evolution()
+plot_columns()
+plot_delay_causes()
+plot_Interact_Gare()
 
 # --- SECTION 5: INTERFACE DE PRÉDICTION (Prediction Interface) ---
 # TODO: Créer des champs de saisie pour l'utilisateur (Gare départ, Gare arrivée, mois du voyage)
